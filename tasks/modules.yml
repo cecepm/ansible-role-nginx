@@ -1,0 +1,2 @@
+- include: modules/ngx_pagespeed.yml
+  when: nginx_source_modules_included.ngx_pagespeed is defined

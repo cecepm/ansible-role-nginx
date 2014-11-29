@@ -1,0 +1,17 @@
+/var/log/nginx/*.log {
+    daily
+    missingok
+{% if nginx_logrotate_olddir is defined %}
+    olddir {{ nginx_logrotate_olddir }}
+{% endif %}
+    rotate 365
+    compress
+    dateext
+    delaycompress
+    notifempty
+    create 640 nginx adm
+    sharedscripts
+    postrotate
+        [ -f /var/run/nginx.pid ] && kill -USR1 `cat /var/run/nginx.pid`
+    endscript
+}

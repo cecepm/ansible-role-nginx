@@ -1,0 +1,54 @@
+- include: dependency_user.yml
+- include: dependency_dirs.yml
+
+- name: download nginx_source sources
+  get_url:
+    url: "{{ nginx_source_url }}"
+    dest: "{{ nginx_source_file }}"
+
+- name: expand nginx_source sources
+  unarchive:
+    src: "{{ nginx_source_file }}"
+    dest: "{{ nginx_source_download_dir }}/"
+    creates: "{{ nginx_source_dir }}/README"
+    copy: no
+
+- name: ensure nginx build dependencies is installed
+  apt: name={{ item }} state=present
+  with_items:
+  - build-essential
+  - libpcre3
+  - libpcre3-dev
+  - libssl-dev
+  - unzip
+  - zlib1g-dev
+  - logrotate
+  sudo: yes
+
+- include: modules.yml
+
+- name: build nginx
+  shell: >
+    cd {{ nginx_source_dir }} &&
+    ./configure {{ nginx_source_configure_flags }} &&
+    make
+    creates={{ nginx_source_dir}}/objs/nginx
+
+- name: install nginx
+  command: make install chdir={{ nginx_source_dir }} creates=/usr/sbin/nginx
+  sudo: yes
+
+- name: install nginx init script
+  template: src=nginx.init.j2 dest=/etc/init.d/nginx owner=root group=root mode=755
+  sudo: yes
+
+- name: ensure nginx service installed
+  service: name=nginx state=started enabled=yes
+  sudo: yes
+
+- name: configure nginx logrotate
+  template: src=nginx.logrotate.j2 dest=/etc/logrotate.d/nginx owner=root group=root mode=0644
+  sudo: yes
+
+- include: conf.yml
+- include: site_default.yml

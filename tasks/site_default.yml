@@ -1,0 +1,26 @@
+- name: copy nginx default site configuration
+  template: >
+    src=nginx.site.default.j2 dest=/etc/nginx/sites-available/default
+    owner=root group=root mode=644
+  sudo: yes
+
+- name: enabled default site
+  file: >
+    src=/etc/nginx/sites-available/default
+    dest=/etc/nginx/sites-enabled/00-default
+    state=link
+    force=yes
+  sudo: yes
+
+- name: ensure default site directory exists
+  file:
+    path: /sites/default
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+  sudo: yes
+
+- name: copy default index.html
+  shell: cp /etc/nginx/html/* /sites/default creates=/sites/default/index.html
+  sudo: yes

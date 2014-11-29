@@ -1,0 +1,7 @@
+- name: ensure group nginx exists
+  group: name=nginx system=yes state=present
+  sudo: yes
+
+- name: ensure user nginx exists
+  user: name=nginx group=nginx shell=/bin/false home=/nonexistent system=yes state=present
+  sudo: yes

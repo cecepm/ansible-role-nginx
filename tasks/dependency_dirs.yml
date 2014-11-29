@@ -1,0 +1,50 @@
+- name: ensure nginx_source_download_dir exists
+  file:
+    path: "{{ nginx_source_download_dir }}"
+    state: directory
+    owner: "{{ ansible_env.USER }}"
+    mode: "755"
+  sudo: yes
+
+
+## debian style sites-available, sites-enabled
+##
+- name: ensure nginx sites-available exists
+  file:
+    path: /etc/nginx/sites-available
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+  when: nginx_logrotate_olddir is defined
+  sudo: yes
+
+- name: ensure nginx sites-enabled exists
+  file:
+    path: /etc/nginx/sites-enabled
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+  when: nginx_logrotate_olddir is defined
+  sudo: yes
+
+- name: ensure nginx cache directory exists
+  file:
+    path: /var/cache/nginx/
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+  sudo: yes
+
+- name: ensure nginx log olddir exists
+  file:
+    path: "{{ nginx_logrotate_olddir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+  when: nginx_logrotate_olddir is defined
+  sudo: yes
+

@@ -1,0 +1,31 @@
+- name: ensure ngx_pagespeed_download_dir exists
+  file:
+    path: "{{ ngx_pagespeed_download_dir }}"
+    state: directory
+    owner: "{{ ansible_env.USER }}"
+    mode: "755"
+  sudo: yes
+
+- name: download ngx_pagespeed sources
+  get_url:
+    url: "{{ ngx_pagespeed_url }}"
+    dest: "{{ ngx_pagespeed_file }}"
+
+- name: expand ngx_pagespeed sources
+  unarchive:
+    src: "{{ ngx_pagespeed_file }}"
+    dest: "{{ ngx_pagespeed_download_dir }}/"
+    creates: "{{ ngx_pagespeed_dir }}/README.md"
+    copy: no
+
+- name: download ngx_pagespeed_psol_file
+  get_url:
+    url: "{{ ngx_pagespeed_psol_url }}"
+    dest: "{{ ngx_pagespeed_psol_file }}"
+
+- name: expand ngx_pagespeed_psol_file
+  unarchive:
+    src: "{{ ngx_pagespeed_psol_file }}"
+    dest: "{{ ngx_pagespeed_dir }}"
+    creates: "{{ ngx_pagespeed_psol_dir }}/include_history.txt"
+    copy: no
